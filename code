@@ -1,0 +1,86 @@
+def meny():
+    print("1. Lag et nytt emne")
+    print("2. Legg til et emne i studieplan")
+    print("3. Skriv ut en liste over regisrerte emner")
+    print("4. Skriv ut studieplanen med hvilke emner som er i hvert semester")
+    print("5. Sjekk om studieplanen er gyldig eller ikke")
+    print("6. Lagre emnene og studieplanen fra fil")
+    print("7. Les inn emnene og studieplanen fra fil")
+    print ("8. Avslutt program")
+
+def main():
+    emner = []
+    studieplan = {}
+    
+    while True: 
+        meny()
+        valg = input("Velg en funksjon: ")
+        
+        if valg == "1":
+            nytt_emne = input("Skriv inn nytt emne: ")
+            emner.append(nytt_emne)
+            print(f"Emne {nytt_emne} er lakt til.")
+            
+    
+        elif valg == "2":
+            if not emner: 
+                print("Ingen emner laget enda")
+                continue
+            semester = input("Hvilket semester?: ")
+            emne = input("Hvilket emne?: ")
+            if emne in emner:
+                studieplan.setdefault(semester, [])
+                if emne not in studieplan[semester]:
+                    studieplan[semester].append(emne)
+                print(f"Emnet '{emne}' lagt til i {semester}.")
+            else:
+                print("Emnet finnes ikke i lista over registrerte emner.")
+                
+                
+        elif valg == "3":
+            print("Registrerte emner: ")
+            for e in emner:
+                print(e)
+        
+       
+        elif valg == "4":
+                print("\nStudieplan:")
+                for semester, emneliste in studieplan.items():
+                    print(f"{semester}: {', '.join(emneliste)}")
+                    
+        elif valg == "5":
+            if emner and studieplan:
+                print("Studieplanen ser gyldig ut.")
+            else:
+                print("Studieplanen er IKKE gyldig.")
+                
+       
+        elif valg == "6":
+            with open("studieplan.txt", "w", encoding="utf-8") as f:
+                f.write("Emner:\n")
+                for e in emner:
+                    f.write(e + "\n")
+                f.write("\nStudieplan:\n")
+                for semester, emneliste in studieplan.items():
+                    f.write(f"{semester}: {', '.join(emneliste)}\n")
+            print("Emner og studieplan lagret til fil.")
+        
+        elif valg == "7":
+            try:
+                with open("studieplan.txt", "r", encoding="utf-8") as f:
+                    print("\nInnhold fra fil:")
+                    print(f.read())
+            except FileNotFoundError:
+                print("Ingen fil funnet. Lagre først.")
+            
+    
+    
+        elif valg == "8":
+            print("Avslutter Program")
+            break
+        
+
+if __name__ == "__main__":
+    main()
+    
+                
