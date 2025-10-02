@@ -1,3 +1,5 @@
+
+#Skriver ut menyvalg til brukeren
 def meny():
     print("1. Lag et nytt emne")
     print("2. Legg til et emne i studieplan")
@@ -8,48 +10,71 @@ def meny():
     print("7. Les inn emnene og studieplanen fra fil")
     print ("8. Avslutt program")
 
+
 def main():
-    emner = []
-    studieplan = {}
+#Lager tre parallelle lister der hver verdi i disse hører til samme emne.
+    emner, semestre, studiepoeng = [], [], []  
+#Lager en egen liste for studieplanen, her skal (Semester, Emne, og studiepoeng føres inn)
+    studieplan = []
     
     while True: 
-        meny()
+#Viser meny hver runde i løkka
+        meny()  
+#Spør bruker om å velge en funksjon fra menyen.
         valg = input("Velg en funksjon: ")
         
         if valg == "1":
-            nytt_emne = input("Skriv inn nytt emne: ")
-            emner.append(nytt_emne)
-            print(f"Emne {nytt_emne} er lakt til.")
-            
-    
-        elif valg == "2":
-            if not emner: 
-                print("Ingen emner laget enda")
-                continue
-            semester = input("Hvilket semester?: ")
-            emne = input("Hvilket emne?: ")
-            if emne in emner:
-                studieplan.setdefault(semester, [])
-                if emne not in studieplan[semester]:
-                    studieplan[semester].append(emne)
-                print(f"Emnet '{emne}' lagt til i {semester}.")
+#Spør brukeren om å skrive inn emne, og gjør resultatet om til store bokstaver.
+            nytt_emne = input("Skriv inn nytt emne: ").strip().upper()
+            if nytt_emne in emner:
+                print("Emnet finnes allerede.")
             else:
-                print("Emnet finnes ikke i lista over registrerte emner.")
+#Lager plassholdere i parallelle lister for å holde indeksene like lange
+                emner.append(nytt_emne)
+                semestre.append(None)
+                studiepoeng.append(None)
+                print(f"Emne {nytt_emne} er lagt til.")
                 
-                
-        elif valg == "3":
-            print("Registrerte emner: ")
+#Enkel bekreftelse for å skrive alle registrerte emnekoder på skjerm 
             for e in emner:
                 print(e)
+                
+                
+        elif valg == "2":
+            kode = input("Skriv inn emnekode: ").strip().upper()
+            if kode not in emner:
+                print("Legg inn emnet først via funksjon 1.")
+                continue
+            i = emner.index(kode)
+            semestre[i] = input("Undervises i (høst/vår): ").strip().lower()
+            sp = float(input("Studiepoeng: ").replace(",", "."))
+            studiepoeng[i] = sp
+            studieplan.append((semestre[i], kode, sp))
+            print(f"Emne {kode} registrert: {semestre[i]}")
+
+
+        elif valg == "3":
+            print("\nRegistrerte emner:")
+            if not emner:
+                print("(ingen)")
+            else:
+                for i in range(len(emner)):
+                    k = emner[i]
+                    sp = studiepoeng[i]
         
-       
+                    print(f"{k}")
+                    
+                    
         elif valg == "4":
-                print("\nStudieplan:")
-                for semester, emneliste in studieplan.items():
-                    print(f"{semester}: {', '.join(emneliste)}")
+            print("Studieplan")
+            if not emner:
+                print("(ingen)")
+            else:
+                for sem, kode, sp in studieplan:
+                    print(f"{sem} | {kode} | {int(sp) if float(sp).is_integer() else sp} studiepoeng")
                     
         elif valg == "5":
-            if emner and studieplan:
+            if emner and semestre:
                 print("Studieplanen ser gyldig ut.")
             else:
                 print("Studieplanen er IKKE gyldig.")
@@ -60,10 +85,11 @@ def main():
                 f.write("Emner:\n")
                 for e in emner:
                     f.write(e + "\n")
+            
                 f.write("\nStudieplan:\n")
-                for semester, emneliste in studieplan.items():
-                    f.write(f"{semester}: {', '.join(emneliste)}\n")
-            print("Emner og studieplan lagret til fil.")
+                for sem, kode, sp in studieplan:
+                    f.write(f"{sem} | {kode} | {int(sp) if float(sp).is_integer() else sp} studiepoeng\n")
+                print("Studieplan lagret.")
         
         elif valg == "7":
             try:
